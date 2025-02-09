@@ -1,0 +1,7 @@
+{
+    "name": "singh/cicd-eb",
+    "type": "library",
+    "require": {
+        "phpmailer/phpmailer": "^6.9"
+    }
+}
