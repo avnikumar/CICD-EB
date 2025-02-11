@@ -1,0 +1,31 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      php: 8.4  # Change based on your PHP version
+    commands:
+      - echo "Installing Composer dependencies..."
+      - composer install --no-dev --optimize-autoloader
+
+  pre_build:
+    commands:
+      - echo "Zipping application for deployment..."
+      - zip -r deploy.zip . -x "*.git*" ".github/*" "vendor/*" ".env"
+
+  build:
+    commands:
+      - echo "Uploading to S3..."
+      - aws s3 cp deploy.zip s3://your-s3-bucket-name/deploy.zip
+
+  post_build:
+    commands:
+      - echo "Triggering CodeDeploy..."
+      - aws deploy create-deployment \
+          --application-name your-codedeploy-app-name \
+          --deployment-group-name your-codedeploy-group-name \
+          --s3-location bucket=your-s3-bucket-name,key=deploy.zip,bundleType=zip
+
+artifacts:
+  files:
+    - deploy.zip
